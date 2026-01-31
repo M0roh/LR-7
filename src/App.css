@@ -60,3 +60,15 @@ table {
   justify-content: space-between
  }
 .close { cursor: pointer }
+
+.inlineText {
+  cursor: text;
+  padding: 2px 4px;
+}
+.inlineInput {
+  width: 100%;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 14px;
+}

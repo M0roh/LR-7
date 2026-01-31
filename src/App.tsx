@@ -16,6 +16,36 @@ const statusMap: Record<Status, { label: string; color: string }> = {
   canceled: { label: "Задача отменена", color: "#f5e9b7" },
 };
 
+function InlineEdit({ value, onSave }: { value: string; onSave: (v: string) => void }) {
+  const [editing, setEditing] = useState(false);
+  const [local, setLocal] = useState(value);
+
+
+  if (!editing) {
+    return (
+      <div
+        className="inlineText"
+        onClick={() => setEditing(true)}
+      >
+        {value}
+      </div>
+    );
+  }
+
+  return (
+    <input
+      autoFocus
+      value={local}
+      className="inlineInput"
+      onChange={e => setLocal(e.target.value)}
+      onBlur={() => {
+        onSave(local);
+        setEditing(false);
+      }}
+    />
+  );
+}
+
 export default function App() {
   const [page, setPage] = useState<"list" | "add">("list");
   const [filter, setFilter] = useState<Status | "all">("all");
@@ -51,7 +81,16 @@ export default function App() {
             <tbody>
               {filteredTasks.map(task => (
                 <tr key={task.id}>
-                  <td>{task.title}</td>
+                  <td>
+                    <InlineEdit
+                      value={task.title}
+                      onSave={(val) =>
+                        setTasks(tasks.map(t =>
+                          t.id === task.id ? { ...t, title: val } : t
+                        ))
+                      }
+                    />
+                  </td>
                   <td>
                     <select
                       value={task.status}
@@ -117,7 +156,7 @@ function AddTask({ onAdd, onClose }: { onAdd: (t: Omit<Task, "id">) => void; onC
         </select>
 
         <label>Дедлайн</label>
-        <input value={deadline} onChange={e => setDeadline(e.target.value)} placeholder="Укажите дедлайн" />
+        <input type="date" value={deadline} onChange={e => setDeadline(e.target.value)} placeholder="Укажите дедлайн" />
 
         <button
           className="addBtn"
